@@ -22,7 +22,7 @@ export class AuthService{
 
     async Login({ email, password }){
         try {
-            const session = await this.account.createEmailSession(email, password);
+            const session = await this.account.createEmailPasswordSession(email, password);
             return session;
         } catch (error) {
             console.error("Error in login:", error);

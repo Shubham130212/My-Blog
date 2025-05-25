@@ -1,9 +1,9 @@
-import React, {  useCallback,useEffect } from "react";
+import React, { useState, useCallback,useEffect } from "react";
 import {  useForm } from "react-hook-form";
 import { Button, Input, Select, RTE } from "../index";
 import appwriteService from "../../appwrite/dbconfig";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import authService from "../../appwrite/auth";
 
 /** Watch - This function is used to observe and retrieve the value of form fields in real time. */
 
@@ -19,10 +19,32 @@ function PostForm({ post }) {
     });
 
   const navigate = useNavigate();
-  const userData = useSelector((state) => state.user.userData);
+  const [userData, setUserData] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
+  useEffect(()=>{
+    const fetchUser = async () => {
+      try {
+        const user = await authService.currentUser();
+        setUserData(user);
+        console.log("Fetched userData:", user);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setError("Failed to fetch user data. Please log in.");
+      }
+    };
+    fetchUser();
+  },[])
 
   const submit = async (data) => {
+    setError(null);
+    setLoading(true);
     /** update image */
+    if (!userData) {
+        setError("Please log in to create or update a post.");
+        return;
+    }
     if (post) {
       const file = data.image[0]
         ? appwriteService.uploadImage(data.image[0])
@@ -40,13 +62,16 @@ function PostForm({ post }) {
         navigate(`/post/${postData.$id}`);
       }
     }else{
-        const file = data.image[0]?appwriteService.uploadImage(data.image[0]):null;
+        if(!data.image[0]){
+          setError("Please select an image");
+        }
+        const file = await appwriteService.uploadImage(data.image[0]);
         if(file){
-            const fileId=file.id
+            const fileId=file.$id
             data.image=fileId
             const postData=await appwriteService.createPost({
                 ...data,
-                userId:userData.id
+                userId:userData.$id
             })
             if(postData){
                 navigate(`/post/${postData.$id}`);
