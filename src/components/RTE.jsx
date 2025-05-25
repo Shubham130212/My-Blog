@@ -3,6 +3,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { Controller } from "react-hook-form";
 
 export default function RTE({ name, control, label, defaultValue }) {
+
   return (
     <div className="w-full">
       {label && <label className="text-sm text-gray-500">{label}</label>}
@@ -10,7 +11,9 @@ export default function RTE({ name, control, label, defaultValue }) {
       <Controller
         name={name}
         control={control}
-        render={({ field: { onChange } }) => <Editor
+        render={({ field: { onChange } }) =>(
+          <Editor
+            apiKey="3aqu2rpwzlyesm0iu4jh0agy7e1hz1qtf2zxe8e7skh000pi"
             initialValue={defaultValue}
             init={{
               height: 500,
@@ -27,7 +30,8 @@ export default function RTE({ name, control, label, defaultValue }) {
                 "removeformat | help",
             }}
             onEditorChange={onChange}
-         />}
+         />
+        )}
       />
     </div>
   );

@@ -2,8 +2,8 @@ import React from 'react'
 
 function Button({
     children,
-    type='button',
-    bgColor='bg-blue-600',
+    //type='button',
+    bgColor='bg-purple-400',
     textColor='text-white',
     className='',
     ...props
